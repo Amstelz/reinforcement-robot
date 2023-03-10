@@ -6,7 +6,7 @@ from game import SnakeGameAI, Direction, Point
 from model import Linear_QNet, QTrainer
 from helper import plot
 
-MAX_MEMORY = 100_000
+MAX_MEMORY = 1000_000
 BATCH_SIZE = 1000
 LR = 0.001
 
@@ -23,11 +23,11 @@ class Agent:
 
     def get_state(self, game):
         head = game.snake[0]
-        point_l = Point(head.x - 20, head.y)
-        point_r = Point(head.x + 20, head.y)
-        point_u = Point(head.x, head.y - 20)
-        point_d = Point(head.x, head.y + 20)
-        
+        point_l = Point(head.x - 32, head.y)
+        point_r = Point(head.x + 32, head.y)
+        point_u = Point(head.x, head.y - 32)
+        point_d = Point(head.x, head.y + 32)
+
         dir_l = game.direction == Direction.LEFT
         dir_r = game.direction == Direction.RIGHT
         dir_u = game.direction == Direction.UP

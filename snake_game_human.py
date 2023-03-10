@@ -52,7 +52,7 @@ class SnakeGame:
         self.clock = pygame.time.Clock()
         
         # init game state
-        self._load_level(1)
+        self._load_level(2)
         self.direction = Direction.RIGHT
         
         self.head = Point(self.w/2 - BLOCK_SIZE, self.h/2 - BLOCK_SIZE) 
@@ -78,7 +78,7 @@ class SnakeGame:
         x = random.randint(0, (self.w-BLOCK_SIZE )//BLOCK_SIZE )
         y = random.randint(0, (self.h-BLOCK_SIZE )//BLOCK_SIZE )
         self.food = Point(x*BLOCK_SIZE , y*BLOCK_SIZE )
-        if self.food == self.snake or self.world[y][x] == '=' or self.food in self.snake:
+        if self.world[y][x] == '=' or self.food in self.snake:
             self._place_food()
         else: 
             self.world[y][x] = '*'

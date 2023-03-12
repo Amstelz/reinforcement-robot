@@ -12,9 +12,8 @@ class Linear_QNet(nn.Module):
 
     def forward(self, x):
         x = F.relu(self.linear1(x))
-        x = self.linear2(x)
-        return x
-
+        return self.linear2(x)
+    
     def save(self, file_name='model.pth'):
         model_folder_path = './model'
         if not os.path.exists(model_folder_path):
@@ -23,6 +22,33 @@ class Linear_QNet(nn.Module):
         file_name = os.path.join(model_folder_path, file_name)
         torch.save(self.state_dict(), file_name)
 
+class DQNet(nn.Module):
+    def __init__(self, input_size, output_size):
+        super().__init__()
+        self.linear1 = nn.Linear(input_size, 32)
+        self.linear2 = nn.Linear(32, 64)
+        self.linear3 = nn.Linear(64, 128)
+        self.linear4 = nn.Linear(128, 256)
+        self.linear5 = nn.Linear(256, 512)
+        self.linear6 = nn.Linear(512, 1024)
+        self.linear7 = nn.Linear(1024, output_size)
+
+    def forward(self, x):
+        x = F.relu(self.linear1(x))
+        x = F.relu(self.linear2(x))
+        x = F.relu(self.linear3(x))
+        x = F.relu(self.linear4(x))
+        x = F.relu(self.linear5(x))
+        x = F.relu(self.linear6(x))
+        return self.linear7(x)
+    
+    def save(self, file_name='model.pth'):
+        model_folder_path = './DQNet_model'
+        if not os.path.exists(model_folder_path):
+            os.makedirs(model_folder_path)
+
+        file_name = os.path.join(model_folder_path, file_name)
+        torch.save(self.state_dict(), file_name)
 
 class QTrainer:
     def __init__(self, model, lr, gamma):
@@ -38,15 +64,35 @@ class QTrainer:
         action = torch.tensor(action, dtype=torch.long)
         reward = torch.tensor(reward, dtype=torch.float)
         # (n, x)
-
+        
+        # print('state', state)
+        # print('next_state', next_state)
+        # print('action', action)
+        # print('reward', reward)
+        
+        # old state
         if len(state.shape) == 1:
-            # (1, x)
             state = torch.unsqueeze(state, 0)
             next_state = torch.unsqueeze(next_state, 0)
             action = torch.unsqueeze(action, 0)
             reward = torch.unsqueeze(reward, 0)
             done = (done, )
+        
+        # print('dim', len(state.shape) )
+        # action = torch.unsqueeze(action, 0)
+        # reward = torch.unsqueeze(reward, 0)
+        # done = (done, )
 
+        # # new state
+        # if len(state.shape) == 3:
+        #     state = torch.squeeze(state)
+        #     next_state = torch.squeeze(next_state)
+        #     action = torch.squeeze(action)
+        #     reward = torch.squeeze(reward)
+        
+        # print('new_state', state)
+        # print('new_next_state', next_state)
+        
         # 1: predicted Q values with current state
         pred = self.model(state)
 
@@ -56,6 +102,9 @@ class QTrainer:
             if not done[idx]:
                 Q_new = reward[idx] + self.gamma * torch.max(self.model(next_state[idx]))
 
+            # print('idx', idx)
+            # print('action', action[idx])
+            # print(torch.argmax(action[idx]).item())
             target[idx][torch.argmax(action[idx]).item()] = Q_new
     
         # 2: Q_new = r + y * max(next_predicted Q value) -> only do this if not done

@@ -27,11 +27,12 @@ TITLE = 'Robot'
 LEVEL_PATH = 'levels/'
 ASSETS_PATH = 'assets/'
 
-WORLD_SIZE = 20
+WORLD_SIZE = 8
 BLOCK_SIZE = 32
 WIDTH = WORLD_SIZE*BLOCK_SIZE
 HEIGHT = WORLD_SIZE*BLOCK_SIZE
-SPEED = 5
+SPEED = 2
+LEVEL = 1
 
 char_to_image = {
     '.': os.path.join(ASSETS_PATH, 'dot.png'),
@@ -52,7 +53,7 @@ class SnakeGame:
         self.clock = pygame.time.Clock()
         
         # init game state
-        self._load_level(2)
+        self._load_level(LEVEL)
         self.direction = Direction.RIGHT
         
         self.head = Point(self.w/2 - BLOCK_SIZE, self.h/2 - BLOCK_SIZE) 

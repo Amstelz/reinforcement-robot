@@ -3,7 +3,7 @@ import random
 import numpy as np
 from collections import deque
 from game import SnakeGameAI, Direction, Point
-from model import Linear_QNet, QTrainer
+from model import Linear_QNet, QTrainer, DQNet
 from helper import plot
 
 MAX_MEMORY = 1000_000
@@ -18,9 +18,10 @@ class Agent:
         self.gamma = 0.9 # discount rate
         self.memory = deque(maxlen=MAX_MEMORY) # popleft()
         self.model = Linear_QNet(11, 256, 3)
+        # self.model = DQNet(256, 3)
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
 
-
+    # old get_state
     def get_state(self, game):
         head = game.snake[0]
         point_l = Point(head.x - 32, head.y)
@@ -67,10 +68,38 @@ class Agent:
 
         return np.array(state, dtype=int)
 
+    # def get_state(self, game):
+    #     head = game.snake[0]
+    #     body = game.snake[1:]
+    #     world = game.world
+    #     food = game.food
+
+    #     head_matrix = np.zeros((game.world_size, game.world_size))
+    #     head_matrix[int(head.y//game.block_size), int(head.x//game.block_size)] = 1
+
+    #     body_matrix = np.zeros((game.world_size, game.world_size))
+    #     for b in body:
+    #         body_matrix[int(b.y//game.block_size), int(b.x//game.block_size)] = 1
+
+    #     world_matrix = np.zeros((game.world_size, game.world_size))
+    #     for i in range(game.world_size):
+    #         for j in range(game.world_size):
+    #             if world[i][j] == "=":
+    #                 world_matrix[i][j] = 1
+
+    #     food_matrix = np.zeros((game.world_size, game.world_size))
+    #     food_matrix[int(food.y//game.block_size), int(food.x//game.block_size)] = 1
+
+    #     state = np.array([head_matrix, body_matrix, world_matrix, food_matrix])
+    #     state = state.reshape((1,256))
+
+    #     return state
+    
     def remember(self, state, action, reward, next_state, done):
         self.memory.append((state, action, reward, next_state, done)) # popleft if MAX_MEMORY is reached
 
     def train_long_memory(self):
+        # print('train long memory')
         if len(self.memory) > BATCH_SIZE:
             mini_sample = random.sample(self.memory, BATCH_SIZE) # list of tuples
         else:
@@ -82,6 +111,7 @@ class Agent:
         #    self.trainer.train_step(state, action, reward, next_state, done)
 
     def train_short_memory(self, state, action, reward, next_state, done):
+        # print('train short memory')
         self.trainer.train_step(state, action, reward, next_state, done)
 
     def get_action(self, state):

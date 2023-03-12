@@ -32,7 +32,8 @@ WORLD_SIZE = 20
 BLOCK_SIZE = 32
 WIDTH = WORLD_SIZE*BLOCK_SIZE
 HEIGHT = WORLD_SIZE*BLOCK_SIZE
-SPEED = 40
+SPEED = 120
+LEVEL = 1
 
 char_to_image = {
     '.': os.path.join(ASSETS_PATH, 'dot.png'),
@@ -46,7 +47,9 @@ class SnakeGameAI:
         self.w = w
         self.h = h
         self.world = []
-        
+        self.world_size = WORLD_SIZE
+        self.block_size = BLOCK_SIZE
+
         # init display
         self.display = pygame.display.set_mode((self.w, self.h))
         pygame.display.set_caption(TITLE)
@@ -57,7 +60,7 @@ class SnakeGameAI:
     def reset(self):
         # init game state
         self.world.clear()
-        self._load_level(0)
+        self._load_level(LEVEL)
         self.direction = Direction.RIGHT
 
         self.head = Point(self.w/2 - BLOCK_SIZE, self.h/2 - BLOCK_SIZE)
@@ -126,13 +129,13 @@ class SnakeGameAI:
         # 6. return game over and score
         return reward, game_over, self.score
 
-
+    
     def is_collision(self, pt=None):
         if pt is None:
             pt = self.head
 
         # hits wall
-        if int(pt.y//BLOCK_SIZE) >= 20 or int(pt.x//BLOCK_SIZE) >= 20 or int(pt.y//BLOCK_SIZE) < 0 or int(pt.x//BLOCK_SIZE) < 0:
+        if int(pt.y//BLOCK_SIZE) >= WORLD_SIZE or int(pt.x//BLOCK_SIZE) >= WORLD_SIZE or int(pt.y//BLOCK_SIZE) < 0 or int(pt.x//BLOCK_SIZE) < 0:
             return True
         if self.world[int(pt.y//BLOCK_SIZE)][int(pt.x//BLOCK_SIZE)] == '=':
             return True 

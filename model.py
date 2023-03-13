@@ -34,12 +34,12 @@ class DQNet(nn.Module):
         self.linear7 = nn.Linear(1024, output_size)
 
     def forward(self, x):
-        x = F.relu(self.linear1(x))
-        x = F.relu(self.linear2(x))
-        x = F.relu(self.linear3(x))
-        x = F.relu(self.linear4(x))
-        x = F.relu(self.linear5(x))
-        x = F.relu(self.linear6(x))
+        x = F.leaky_relu(self.linear1(x))
+        x = F.leaky_relu(self.linear2(x))
+        x = F.leaky_relu(self.linear3(x))
+        x = F.leaky_relu(self.linear4(x))
+        x = F.leaky_relu(self.linear5(x))
+        x = F.leaky_relu(self.linear6(x))
         return self.linear7(x)
     
     def save(self, file_name='model.pth'):
@@ -79,11 +79,12 @@ class QTrainer:
             done = (done, )
         
         # print('dim', len(state.shape) )
+
+        # new state
         # action = torch.unsqueeze(action, 0)
         # reward = torch.unsqueeze(reward, 0)
         # done = (done, )
-
-        # # new state
+    
         # if len(state.shape) == 3:
         #     state = torch.squeeze(state)
         #     next_state = torch.squeeze(next_state)

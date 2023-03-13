@@ -10,6 +10,10 @@ MAX_MEMORY = 1000_000
 BATCH_SIZE = 1000
 LR = 0.001
 
+# MAX_MEMORY = 10000
+# BATCH_SIZE = 32
+# LR = 0.000001
+
 class Agent:
 
     def __init__(self):
@@ -18,7 +22,7 @@ class Agent:
         self.gamma = 0.9 # discount rate
         self.memory = deque(maxlen=MAX_MEMORY) # popleft()
         self.model = Linear_QNet(11, 256, 3)
-        # self.model = DQNet(256, 3)
+        # self.model = DQNet(1600, 3)
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
 
     # old get_state
@@ -63,7 +67,14 @@ class Agent:
             game.food.x < game.head.x,  # food left
             game.food.x > game.head.x,  # food right
             game.food.y < game.head.y,  # food up
-            game.food.y > game.head.y  # food down
+            game.food.y > game.head.y,  # food down
+
+            # head location 
+            # int(head.y//game.block_size),
+            # int(head.x//game.block_size),
+
+            # body length
+            # len(game.snake)
             ]
 
         return np.array(state, dtype=int)
@@ -91,7 +102,7 @@ class Agent:
     #     food_matrix[int(food.y//game.block_size), int(food.x//game.block_size)] = 1
 
     #     state = np.array([head_matrix, body_matrix, world_matrix, food_matrix])
-    #     state = state.reshape((1,256))
+    #     state = state.reshape((1,1600))
 
     #     return state
     
